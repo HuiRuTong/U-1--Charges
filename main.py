@@ -1,8 +1,8 @@
 import numpy as np
-from neural_net import *
+from src.neural_net import *
 import torch
 
-num_iterations = 5
+num_iterations = 10
 num_transitions = 200
 minibatch_size = 20
 num_epochs = 50

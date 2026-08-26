@@ -1,5 +1,5 @@
 import torch
-from charge_env import *
+from src.charge_env import *
 
 class ActorCritic(torch.nn.Module):
     def __init__(self):

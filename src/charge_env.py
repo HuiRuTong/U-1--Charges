@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.typing as npt
 import gymnasium as gym
-from charge_space import Charge_Space
-import rwd_func
+from src.charge_space import Charge_Space
+import src.rwd_func as rwd_func
 from C.conditions import *
 from C.charges import *
 
