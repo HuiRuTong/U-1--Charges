@@ -9,7 +9,7 @@ def anomaly_check_cubic(q_charges:npt.NDArray, l_charges:npt.NDArray, e_charges:
                   u_charges:npt.NDArray, d_charges:npt.NDArray, v_charges:npt.NDArray):
     return np.sum(6*q_charges**2 + 2*l_charges**2 - e_charges**2 - 3*u_charges**2 - 3*d_charges**2 - v_charges**3)
 
-def yukawa_check(charges_sum:npt.NDArray):
+def yukawa(charges_sum:npt.NDArray):
     q_sum = charges_sum[0]
     l_sum = charges_sum[1]
     e_sum = charges_sum[2]
@@ -17,9 +17,7 @@ def yukawa_check(charges_sum:npt.NDArray):
     d_sum = charges_sum[4]
     v_sum = charges_sum[5]
 
-    if (2*q_sum - u_sum - d_sum != - l_sum + e_sum + 3*q_sum + v_sum):
-        return False
-    return True
+    return (-q_sum + l_sum - e_sum - u_sum - d_sum - v_sum)
 
 def multiple_check(found_charges:npt.NDArray, curr_charges:npt.NDArray):
     # Assumes charges are already sorted in order of increasing magnitude

@@ -8,6 +8,3 @@ curr_dir="$(cd "$(dirname "$0")" && pwd)"
 cd $curr_dir/../C
 python3 build.py build_ext --inplace
 echo "finished building C extensions"
-
-cd $curr_dir/../
-python3 space_test.py  # replace this with smth else

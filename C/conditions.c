@@ -47,7 +47,7 @@ static PyObject *anomaly_cubic(PyObject *self, PyObject *args) {
     return PyLong_FromLong(coeff);
 }
 
-static PyObject *yukawa_check(PyObject *self, PyObject *args) {
+static PyObject *yukawa(PyObject *self, PyObject *args) {
     PyArrayObject *charges_sum;
     int q_sum, l_sum, e_sum, u_sum, d_sum, v_sum;
     
@@ -62,10 +62,7 @@ static PyObject *yukawa_check(PyObject *self, PyObject *args) {
     d_sum = ((int *) PyArray_DATA(charges_sum))[4];
     v_sum = ((int *) PyArray_DATA(charges_sum))[5];
 
-    if (2*q_sum - u_sum - d_sum != - l_sum + e_sum + 3*q_sum + v_sum) {
-        return Py_False;
-    }
-    return Py_True;
+    return PyLong_FromLong(-q_sum + l_sum - e_sum - u_sum - d_sum - v_sum);
 }
 
 static PyObject *multiple_check(PyObject *self, PyObject *args) {
@@ -112,7 +109,7 @@ static PyMethodDef callables[] = {
     {"anomaly_cubic", anomaly_cubic, METH_VARARGS,
      "Checks if the individual charges fulfill the cubic conditions"},
             
-    {"yukawa_check", yukawa_check, METH_VARARGS,
+    {"yukawa", yukawa, METH_VARARGS,
      "Checks yukawa stuff"},
                 
     {"multiple_check", multiple_check, METH_VARARGS,
