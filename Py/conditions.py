@@ -1,23 +1,23 @@
 import numpy as np
 import numpy.typing as npt
 
-def anomaly_check_quadratic(q_charges:npt.NDArray, l_charges:npt.NDArray, e_charges:npt.NDArray,
-                  u_charges:npt.NDArray, d_charges:npt.NDArray, v_charges:npt.NDArray):
-    return np.sum(q_charges**2 - l_charges**2 + e_charges**2 - 2*u_charges**2 + d_charges**2)
+def anomaly_check_quadratic(charges:npt.NDArray):
+    return np.sum(charges[0,:]**2 + charges[2,:]**2 - 2*charges[3,:]**2
+                  - charges[4,:]**2 + charges[5,:]**2)
 
-def anomaly_check_cubic(q_charges:npt.NDArray, l_charges:npt.NDArray, e_charges:npt.NDArray,
-                  u_charges:npt.NDArray, d_charges:npt.NDArray, v_charges:npt.NDArray):
-    return np.sum(6*q_charges**2 + 2*l_charges**2 - e_charges**2 - 3*u_charges**2 - 3*d_charges**2 - v_charges**3)
+def anomaly_check_cubic(charges:npt.NDArray):
+    return np.sum(6*charges[0,:]**3 - charges[1,:]**3 - charges[2,:]**3
+                  - 3*charges[3,:]**3 + 2*charges[4,:]**3 - 3*charges[5,:]**3)
 
 def yukawa(charges_sum:npt.NDArray):
     q_sum = charges_sum[0]
-    l_sum = charges_sum[1]
+    v_sum = charges_sum[1]
     e_sum = charges_sum[2]
     u_sum = charges_sum[3]
-    d_sum = charges_sum[4]
-    v_sum = charges_sum[5]
+    l_sum = charges_sum[4]
+    d_sum = charges_sum[5]
 
-    return (-q_sum + l_sum - e_sum - u_sum - d_sum - v_sum)
+    return (-q_sum - v_sum - e_sum - u_sum + l_sum - d_sum)
 
 def multiple_check(found_charges:npt.NDArray, curr_charges:npt.NDArray):
     # Assumes charges are already sorted in order of increasing magnitude

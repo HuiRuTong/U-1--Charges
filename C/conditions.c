@@ -14,12 +14,12 @@ static PyObject *anomaly_quadratic(PyObject *self, PyObject *args) {
 
     for (int i = 0; i < 3; i++) {
         int q = *((int *) PyArray_DATA(charges) + i);
-        int l = *((int *) PyArray_DATA(charges) + 3+i);
         int e = *((int *) PyArray_DATA(charges) + 6+i);
         int u = *((int *) PyArray_DATA(charges) + 9+i);
-        int d = *((int *) PyArray_DATA(charges) + 12+i);
+        int l = *((int *) PyArray_DATA(charges) + 12+i);
+        int d = *((int *) PyArray_DATA(charges) + 15+i);
 
-        coeff += q*q - l*l + e*e - 2*u*u + d*d;
+        coeff += q*q + e*e - 2*u*u - l*l + d*d;
     }
 
     return PyLong_FromLong(coeff);
@@ -35,13 +35,13 @@ static PyObject *anomaly_cubic(PyObject *self, PyObject *args) {
 
     for (int i = 0; i < 3; i++) {
         int q = *((int *) PyArray_DATA(charges) + i);
-        int l = *((int *) PyArray_DATA(charges) + 3+i);
+        int v = *((int *) PyArray_DATA(charges) + 3+i);
         int e = *((int *) PyArray_DATA(charges) + 6+i);
         int u = *((int *) PyArray_DATA(charges) + 9+i);
-        int d = *((int *) PyArray_DATA(charges) + 12+i);
-        int v = *((int *) PyArray_DATA(charges) + 15+i);
+        int l = *((int *) PyArray_DATA(charges) + 12+i);
+        int d = *((int *) PyArray_DATA(charges) + 15+i);
 
-        coeff += 6*q*q*q + 2*l*l*l - e*e*e - 3*u*u*u - 3*d*d*d - v*v*v;
+        coeff += 6*q*q*q - v*v*v - e*e*e - 3*u*u*u + 2*l*l*l - 3*d*d*d;
     }
 
     return PyLong_FromLong(coeff);
@@ -49,20 +49,20 @@ static PyObject *anomaly_cubic(PyObject *self, PyObject *args) {
 
 static PyObject *yukawa(PyObject *self, PyObject *args) {
     PyArrayObject *charges_sum;
-    int q_sum, l_sum, e_sum, u_sum, d_sum, v_sum;
+    int q_sum, v_sum, e_sum, u_sum, l_sum, d_sum;
     
     if (!PyArg_ParseTuple(args, "O", &charges_sum)) {
         return NULL;
     }
 
     q_sum = ((int *) PyArray_DATA(charges_sum))[0];
-    l_sum = ((int *) PyArray_DATA(charges_sum))[1];
+    v_sum = ((int *) PyArray_DATA(charges_sum))[1];
     e_sum = ((int *) PyArray_DATA(charges_sum))[2];
     u_sum = ((int *) PyArray_DATA(charges_sum))[3];
-    d_sum = ((int *) PyArray_DATA(charges_sum))[4];
-    v_sum = ((int *) PyArray_DATA(charges_sum))[5];
+    l_sum = ((int *) PyArray_DATA(charges_sum))[4];
+    d_sum = ((int *) PyArray_DATA(charges_sum))[5];
 
-    return PyLong_FromLong(-q_sum + l_sum - e_sum - u_sum - d_sum - v_sum);
+    return PyLong_FromLong(-q_sum - v_sum - e_sum - u_sum + l_sum - d_sum);
 }
 
 static PyObject *multiple_check(PyObject *self, PyObject *args) {

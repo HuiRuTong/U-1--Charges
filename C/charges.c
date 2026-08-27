@@ -61,7 +61,7 @@ static PyObject *get_higgs_charge(PyObject *self, PyObject *args) {
     }
 
     q_sum = ((int *) PyArray_DATA(charges_sum))[0];
-    v_sum = ((int *) PyArray_DATA(charges_sum))[5];
+    v_sum = ((int *) PyArray_DATA(charges_sum))[1];
 
     return PyLong_FromLong((-3*q_sum - v_sum) / 3);
 }
@@ -78,16 +78,17 @@ static PyObject *get_charges_properties(PyObject *self, PyObject *args) {
     q_sum = *((int *) PyArray_DATA(charges))
             + *((int *) PyArray_DATA(charges) + 1)
             + *((int *) PyArray_DATA(charges) + 2);
-    v_sum = *((int *) PyArray_DATA(charges) + 15)
-            + *((int *) PyArray_DATA(charges) + 16)
-            + *((int *) PyArray_DATA(charges) + 17);
+    v_sum = *((int *) PyArray_DATA(charges) + 3)
+            + *((int *) PyArray_DATA(charges) + 4)
+            + *((int *) PyArray_DATA(charges) + 5);
     
+    // Changed from q l e u d v -> q v e u l d to match their output
     ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[0] = q_sum;
-    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[1] = -3*q_sum;
+    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[1] = v_sum;
     ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[2] = -6*q_sum - v_sum;
     ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[3] = 4*q_sum + v_sum;
-    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[4] = -2*q_sum - v_sum;
-    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[5] = v_sum;
+    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[4] = -3*q_sum;
+    ((int *) PyArray_DATA((PyArrayObject *) charges_sum))[5] = -2*q_sum - v_sum;
 
     /*
     for (int i = 0; i < 18; i += 3) {

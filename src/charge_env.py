@@ -17,7 +17,7 @@ class Charge_Env(gym.Env):
         self.action_space = gym.spaces.Dict(
                                 {
                                  "choose_particle":gym.spaces.Discrete(6, dtype=np.int32),
-                                 "choose_generation":gym.spaces.Discrete(2, dtype=np.int32),
+                                 "choose_generation":gym.spaces.Discrete(3, dtype=np.int32),
                                  "modify_charge":gym.spaces.Discrete(2, dtype=np.int32),
                                 }
                             )   # Mostly just here for convention's sake. Goes unused
@@ -40,12 +40,20 @@ class Charge_Env(gym.Env):
         """
         self.charges_sum = get_charges_properties(self.charges)
 
-        for i in range(1, 6): 
+        for i in range(2, 6): 
             self.charges[i, 2] = self.charges_sum[i] - self.charges[i, 0] - self.charges[i, 1]
             
         self.quadratic_coef = anomaly_quadratic(self.charges)
         self.cubic_coef = anomaly_cubic(self.charges)
         self.yukawa_coef = yukawa(self.charges_sum)
+
+    def _log_charges(self, log_file):
+        for i in range(6):
+            log_file.write(str(self.charges[i, 0])+"   "+str(self.charges[i, 0])+"   ")
+            if (i < 6):
+                log_file.write("   ")
+            else:
+                log_file.write('\n')
 
     def _get_obs(self):
         return self.charges
@@ -53,7 +61,7 @@ class Charge_Env(gym.Env):
     def _get_info(self):
         return f"quadratic coef: {self.quadratic_coef}\ncubic coef: {self.cubic_coef}\nyukawa coef: {self.yukawa_coef}"
 
-    def step(self, action, found_charges, log_file):
+    def step(self, action, found_charges, log_file=None):
         chosen_particle = action[0].item()
         chosen_generation = action[1].item()
         chosen_mod = action[2].item()
@@ -64,11 +72,10 @@ class Charge_Env(gym.Env):
         reward, terminated = rwd_func.generic_rwd(found_charges, self.charges, self.charges_sum,
                                                   self.quadratic_coef, self.cubic_coef, self.yukawa_coef)
         truncated = False
-        if terminated:
-            log_file.write(np.array2string(self.charges)+'\n')
+        if terminated and log_file is not None:
+            self._log_charges(log_file)
 
         self.steps += 1
-        # REPLACE WITH MAX_STEPS
         if (self.steps > self.max_steps):
             truncated = True
 

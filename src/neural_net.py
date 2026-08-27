@@ -17,7 +17,7 @@ class ActorCritic(torch.nn.Module):
         self.choose_generation = torch.nn.Sequential(
             torch.nn.Linear(6*256, 512),
             torch.nn.ReLU(),
-            torch.nn.Linear(512, 2)
+            torch.nn.Linear(512, 3)
         )
 
         self.choose_mod = torch.nn.Sequential(
@@ -141,12 +141,5 @@ class PPO():
     
             self.optimizer.zero_grad()
             tot_loss.backward()
-            """for name, p in self.actor_critic.named_parameters():
-                if p.requires_grad:
-                    print(
-                        name,
-                        "grad:",
-                        None if p.grad is None else p.grad.abs().mean().item()
-                    )"""
             self.optimizer.step()
             self.scheduler.step()

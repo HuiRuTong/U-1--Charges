@@ -34,7 +34,7 @@ class Charge_Space(gym.spaces.Box):
         """
         while(1):
             q_charges = self._get_ordered_charges(3)
-            v_charges = np.zeros((3,), dtype=np.int32)
+            v_charges = self._get_ordered_charges(3)
             l_charges = np.concat(
                         (self._get_ordered_charges(2),
                          np.zeros((1,), dtype=np.int32)), axis=0)
@@ -48,7 +48,7 @@ class Charge_Space(gym.spaces.Box):
                         (self._get_ordered_charges(2),
                          np.zeros((1,), dtype=np.int32)), axis=0)
 
-            charges = np.stack((q_charges, l_charges, e_charges, u_charges, d_charges, v_charges), axis=0)
+            charges = np.stack((q_charges, v_charges, e_charges, u_charges, l_charges, d_charges), axis=0)
             charges_sum = get_charges_properties(charges)
 
             for i in range(1, 6): 
