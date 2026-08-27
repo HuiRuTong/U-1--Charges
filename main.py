@@ -24,7 +24,7 @@ env = Charge_Env(max_charge, max_steps)
 found_charges = []
 
 log_file = open("./found_charges.txt", "w")
-log_file.write("#  Q   Q   Q   n   n   n   e   e   e   u   u   u   L   L   L   d   d   d\n")
+log_file.write("   Q   Q   Q   n   n   n   e   e   e   u   u   u   L   L   L   d   d   d\n")
 
 for i in range(num_iterations):
     print(f"Currently on iteration {i+1} of {num_iterations}")
