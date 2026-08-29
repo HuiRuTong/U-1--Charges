@@ -2,7 +2,7 @@ import numpy as np
 from src.neural_net import *
 import torch
 
-num_iterations = 512
+num_iterations = 5
 num_transitions = 200
 minibatch_size = 20
 num_epochs = 50
@@ -24,7 +24,6 @@ env = Charge_Env(max_charge, max_steps)
 found_charges = []
 
 log_file = open("./found_charges.txt", "w")
-log_file.write("   Q   Q   Q   n   n   n   e   e   e   u   u   u   L   L   L   d   d   d\n")
 
 for i in range(num_iterations):
     print(f"Currently on iteration {i+1} of {num_iterations}")
@@ -49,7 +48,7 @@ for i in range(num_iterations):
 
         if (chosen_particle.item() < 2):
             # To avoid picking 3rd charge for non doublet and neutrino
-            generation_logits.masked_fill_(torch.tenzor([False, False, 1e-9]))
+            generation_logits.masked_fill_(torch.tensor([False, False, True]), 1e-9)
 
         generation_distr = torch.distributions.Categorical(logits=generation_logits)
         chosen_generation = generation_distr.sample()

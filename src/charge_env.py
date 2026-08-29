@@ -49,11 +49,8 @@ class Charge_Env(gym.Env):
 
     def _log_charges(self, log_file):
         for i in range(6):
-            log_file.write(str(self.charges[i, 0])+"   "+str(self.charges[i, 0])+"   ")
-            if (i < 6):
-                log_file.write("   ")
-            else:
-                log_file.write('\n')
+            log_file.write(f"  {self.charges[i, 0]: }  {self.charges[i, 1]: }  {self.charges[i, 2]: }")
+        log_file.write('\n')
 
     def _get_obs(self):
         return self.charges

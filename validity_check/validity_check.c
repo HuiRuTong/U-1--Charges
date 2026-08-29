@@ -2,106 +2,53 @@
 #include <stdlib.h>
 #include <string.h>
 
-int SM5NUSOL = 111152; 
+#define BUFFER_SIZE 5
+#define SMNUR_1_SIZE 38
+#define SMNUR_5_SIZE 111152
+#define SMNUR_10_SIZE 21546920
 
-int *quarter_srch(int *nums, int val, int low, int high) {
+int srch_sol(int *complete_charges, int *found_charges, int num_complete_sol) {
     /*
-        Performs a quarternary search over a
-        sorted arr to find the lower and
-        upper indices that contain val
-
-        A binary search would've been more
-        straightforward but since the arr in
-        question can be 10 bilion elements long,
-        this is basically the only time I get
-        to utilise this atrocious algorithm
+        On second thought, having to constantly rearrange
+        the rows for a binary-esque search is kinda annoying
+        to implement so I've opted to just go back to linear
+        searches :(
     */
-    int temp_high = high;   // To avoid having to pass len as an arg
-    int *idx = malloc(sizeof(int) * 2);
-
-    idx[0] = -1;
-    idx[1] = -1;
-
-    while (low <= high) {
-        int q1 = (3*low + high) / 4;
-        int q2 = (low + high) / 2;
-        int q3 = (low + 3*high) / 4;
-
-        if (nums[q1] == val) {
-            idx[0] = q1;
-            high = q1 - 1;
-        } else if (nums[q2] == val) {
-            idx[0] = q2;
-            high = q2 - 1;
-        } else if (nums[q3] == val) {
-            idx[0] = q3;
-            high = q3 - 1;
-        } else {
-            if (nums[q1] > val) {
-                high = q1 - 1;
-            } else if (nums[q2] > val) {
-                low = q1 = 1;
-                high = q2 - 1;
-            } else if (nums[q3] > val) {
-                low = q2 + 1;
-                high = q3 - 1;
-            } else {
-                low = q3 + 1;
-            }
+    for (int i = 0; i < num_complete_sol; i++) {
+        if (!memcmp(complete_charges + 18*i, found_charges, 18*sizeof(int))) {
+            printf("is on line %d\n", i+1);
+            return 1;
         }
     }
-
-    low = idx[0];
-    high = temp_high;
-
-    while (low <= high) {
-        int q1 = (3*low + high) / 4;
-        int q2 = (low + high) / 2;
-        int q3 = (low + 3*high) / 4;
-
-        if (nums[q1] == val) {
-            idx[1] = q1;
-            low = q1 + 1;
-        } else if (nums[q2] == val) {
-            idx[1] = q2;
-            low = q2 + 1;
-        } else if (nums[q3] == val) {
-            idx[1] = q3;
-            low = q3 + 1;
-        } else {
-            if (nums[q1] > val) {
-                high = q1 - 1;
-            } else if (nums[q2] > val) {
-                low = q1 = 1;
-                high = q2 - 1;
-            } else if (nums[q3] > val) {
-                low = q2 + 1;
-                high = q3 - 1;
-            } else {
-                low = q3 + 1;
-            }
-        }
-    }
-
-    return idx;
+    return 0;
 }
 
 int *extract_charges(FILE *charges, int num_sol) {
     int *all_charges = malloc(sizeof(int) * num_sol * 18);
 
-    int i = 0;
-    while (!feof(charges)) {
-        for (int j = 0; j < 18; j++)
+    for (int i = 0; i < num_sol; i++) {
+        for (int j = 0; j < 18; j++) {
             fscanf(charges, " %d", all_charges + 18*i+j);
-        i++;
+        }
     }
     return all_charges;
 }
 
-static void swap(int *a, int *b) {
+void swap(int *a, int *b) {
     int temp = *a;
     *a = *b;
     *b = temp;
+}
+
+void add_charges(int *a, int *b, int pos, int len) {
+    // Reserve more space if needed
+    if (pos >= len) {
+        a = realloc(a, sizeof(int) * (len + BUFFER_SIZE));
+    }
+
+    for (int i = 0; i < 18; i++) {
+        a[18*pos + i] = b[i];
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -113,19 +60,10 @@ int main(int argc, char *argv[]) {
     int num_found_sol = atoi(argv[4]);
     int *found_charges = extract_charges(found_sol, num_found_sol);
 
-    int *idx_bounds;
     int low = 0;
-    int high = num_complete_sol - 1;
-
-    int *invalid_charges = malloc(sizeof(int) * 5 * 18);
-    /*
-    for (int i = 0; i < num_found_sol*18; i++) {
-        printf("%d ", *(found_charges+i));
-        if (i && (i % 18 == 17)) {
-            printf("\n");
-        }
-    }
-    */
+    int upp = num_complete_sol - 1;
+    int *missing_charges = malloc(sizeof(int) * BUFFER_SIZE * 18);
+    int num_missing_charges = 0;
 
     // Sorts the found solutions in increasing order
     for (int i = 0; i < num_found_sol*18; i+=3) {
@@ -140,14 +78,23 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for (int i = 0; i < num_complete_sol; i) {
-        for (int j = 0; j < 18; j++) {
-            idx_bounds = quarter_srch(complete_charges, found_charges[18*i+j], low, high);
-
-            if (idx_bounds[0] == idx_bounds[1]) {
-                break;
-            }
+    for (int i = 0; i < num_found_sol; i++) {
+        printf("Found solution %d ", i);
+        if (!srch_sol(complete_charges, found_charges + 18*i, num_complete_sol)) {
+            add_charges(missing_charges, found_charges + 18*i,
+                        num_missing_charges, BUFFER_SIZE * (1 + num_missing_charges / 5));
+            num_missing_charges++;
+            
+            printf("is nowhere to be seen??\n");
         }
+    }
+
+    printf("Solutions missing from the complete list:\n");
+    for (int i = 0; i < num_missing_charges; i++) {
+        for (int j = 0; j < 18; j++) {
+            printf("% d ", *(missing_charges + 18*i+j));    
+        }
+        printf("\n");
     }
 
     fclose(complete_sol);
@@ -155,5 +102,5 @@ int main(int argc, char *argv[]) {
 
     free(complete_charges);
     free(found_charges);
-    free(invalid_charges);
+    free(missing_charges);
 }
