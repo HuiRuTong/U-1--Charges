@@ -1,11 +1,10 @@
 from C.charges import *
 from C.conditions import *
+import numpy as np
 
-def generic_rwd(found_charges, curr_charges, charges_sum,
-                quadratic_coef, cubic_coef, yukawa_coef):
+def generic_rwd(found_charges, curr_charges, curr_coef, prev_coef):
     """
-        Bad first reward function to make sure the
-        training loop works.
+        Gain some reward for each coef that's 0
     """
     r = 0
     sorted_charges = get_sorted_charges(curr_charges)
@@ -13,15 +12,64 @@ def generic_rwd(found_charges, curr_charges, charges_sum,
         if multiple_check(found, sorted_charges):
             return 300, False
 
-    if not quadratic_coef:
-        r += 100
-    if not cubic_coef:
-        r += 100
-    if not yukawa_coef:
-        r += 100
+    for i in range(3):
+        if not curr_coef[i]:
+            r += 100
+    if r == 300:
+        found_charges.append(sorted_charges)
+        return 500, False
 
-    if r < 300:
-        return r, False
-    
-    found_charges.append(sorted_charges)
-    return r+200, True
+    return r, False
+
+def tot_improvement_rwd(found_charges, curr_charges, curr_coeff, prev_coeff):
+    """
+        Gain a tiny reward if the current sum
+        of coef is less than before and lose
+        some if more than
+    """
+    curr_tot_coef = np.sum(curr_coeff)
+    prev_tot_coef = np.sum(prev_coeff)
+    r = 0
+
+    sorted_charges = get_sorted_charges(curr_charges)
+    for found in found_charges:
+        if multiple_check(found, sorted_charges):
+            return 300, False
+
+    if not curr_tot_coef:
+        found_charges.append(sorted_charges)
+        return 500, True
+
+    if curr_tot_coef < prev_tot_coef:
+        r += 30
+    if curr_tot_coef > prev_tot_coef:
+        r -= 30
+
+    return r, False
+
+def split_improvement_rwd(found_charges, curr_charges, curr_coef, prev_coef):
+    """
+        Gain a miniscule reward if the any of the
+        coef are less than before and lose some if
+        any are more than
+    """
+    r = 0
+
+    sorted_charges = get_sorted_charges(curr_charges)
+    for found in found_charges:
+        if multiple_check(found, sorted_charges):
+            return 300, False
+        
+    for i in range(3):
+        if not curr_coef[i]:
+            r += 100
+        if curr_coef[i] < prev_coef[i]:
+            r += 10
+        if curr_coef[i] > prev_coef[i]:
+            r -= 10
+
+    if r == 300:
+        found_charges.append(sorted_charges)
+        return 500, False
+        
+    return r, False

@@ -60,6 +60,8 @@ int main(int argc, char *argv[]) {
     int num_found_sol = atoi(argv[4]);
     int *found_charges = extract_charges(found_sol, num_found_sol);
 
+    FILE *missing_sol = fopen("./missing_charges.txt", "w");
+
     int low = 0;
     int upp = num_complete_sol - 1;
     int *missing_charges = malloc(sizeof(int) * BUFFER_SIZE * 18);
@@ -79,7 +81,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < num_found_sol; i++) {
-        printf("Found solution %d ", i);
+        printf("Found solution %d ", i+1);
         if (!srch_sol(complete_charges, found_charges + 18*i, num_complete_sol)) {
             add_charges(missing_charges, found_charges + 18*i,
                         num_missing_charges, BUFFER_SIZE * (1 + num_missing_charges / 5));
@@ -89,12 +91,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    printf("Solutions missing from the complete list:\n");
     for (int i = 0; i < num_missing_charges; i++) {
         for (int j = 0; j < 18; j++) {
-            printf("% d ", *(missing_charges + 18*i+j));    
+            fprintf(missing_sol, "  % d", *(missing_charges + 18*i+j));    
         }
-        printf("\n");
+        fprintf(missing_sol, "\n");
     }
 
     fclose(complete_sol);

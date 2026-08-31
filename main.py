@@ -1,8 +1,9 @@
 import numpy as np
 from src.neural_net import *
+from src.rwd_func import *
 import torch
 
-num_iterations = 5
+num_iterations = 512
 num_transitions = 200
 minibatch_size = 20
 num_epochs = 50
@@ -20,10 +21,10 @@ max_steps = 25
 
 actor = ActorCritic()
 agent = PPO(num_epochs, num_transitions, minibatch_size, lr, step_size, lr_gamma, gamma, lmbda, clip_epsilon, entropy_coef)
-env = Charge_Env(max_charge, max_steps)
+env = Charge_Env(max_charge, max_steps, split_improvement_rwd)
 found_charges = []
 
-log_file = open("./found_charges.txt", "w")
+log_file = open("./found_charges_2.txt", "w")
 
 for i in range(num_iterations):
     print(f"Currently on iteration {i+1} of {num_iterations}")
