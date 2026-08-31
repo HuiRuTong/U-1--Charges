@@ -17,7 +17,7 @@ def generic_rwd(found_charges, curr_charges, curr_coef, prev_coef):
             r += 100
     if r == 300:
         found_charges.append(sorted_charges)
-        return 500, False
+        return 500, True
 
     return r, False
 
@@ -52,6 +52,8 @@ def split_improvement_rwd(found_charges, curr_charges, curr_coef, prev_coef):
         Gain a miniscule reward if the any of the
         coef are less than before and lose some if
         any are more than
+
+        Horrible. Absolutely awful. Do not use this one
     """
     r = 0
 
@@ -63,13 +65,13 @@ def split_improvement_rwd(found_charges, curr_charges, curr_coef, prev_coef):
     for i in range(3):
         if not curr_coef[i]:
             r += 100
-        if curr_coef[i] < prev_coef[i]:
-            r += 10
-        if curr_coef[i] > prev_coef[i]:
-            r -= 10
-
+        else:
+            if curr_coef[i] < prev_coef[i]:
+                r += 10
+            if curr_coef[i] > prev_coef[i]:
+                r -= 10
     if r == 300:
         found_charges.append(sorted_charges)
-        return 500, False
+        return 500, True
         
     return r, False
