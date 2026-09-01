@@ -5,4 +5,5 @@ build/
 SMnuRcharges/
 
 *.so
+*.pyd
 *test.py
