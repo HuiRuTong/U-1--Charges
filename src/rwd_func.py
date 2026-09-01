@@ -42,8 +42,6 @@ def tot_improvement_rwd(found_charges, curr_charges, curr_coeff, prev_coeff):
 
     if curr_tot_coef < prev_tot_coef:
         r += 30
-    """if curr_tot_coef > prev_tot_coef:
-        r -= 30"""
 
     return r, False
 
@@ -68,8 +66,6 @@ def split_improvement_rwd(found_charges, curr_charges, curr_coef, prev_coef):
         else:
             if curr_coef[i] < prev_coef[i]:
                 r += 10
-            """if curr_coef[i] > prev_coef[i]:
-                r -= 10"""
     if r == 300:
         found_charges.append(sorted_charges)
         return 500, True
