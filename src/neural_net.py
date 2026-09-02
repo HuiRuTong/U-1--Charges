@@ -54,13 +54,12 @@ class ActorCritic(torch.nn.Module):
             return particle_logits, generation_logits, mod_logits, torch.flatten(val)
 
 class PPO():
-    def __init__(self, num_epochs=64, num_transitions=2048, minibatch_size=64, lr=0.5, step_size=20,
+    def __init__(self, num_epochs=64, num_transitions=2048, minibatch_size=64, lr=0.5,
                  lr_gamma=0.1, gamma=0.98, lmbda=0.02, clip_epsilon=0.2, entropy_coef=0.5):
         self.num_epochs = num_epochs
         self.num_transitions = num_transitions
         self.minibatch_size = minibatch_size
         self.lr = lr
-        self.step_size = step_size
         self.lr_gamma = lr_gamma
         self.gamma = gamma
         self.lmbda = lmbda

@@ -66,6 +66,7 @@ static PyObject *yukawa(PyObject *self, PyObject *args) {
 }
 
 static PyObject *multiple_check(PyObject *self, PyObject *args) {
+    // Assumes charges have already been sorted w/ _sort_abs
     PyArrayObject *found_charges, *curr_charges;
     int *found_arr; 
     int *curr_arr;
@@ -77,27 +78,21 @@ static PyObject *multiple_check(PyObject *self, PyObject *args) {
     found_arr = (int *) PyArray_DATA(found_charges);
     curr_arr = (int *) PyArray_DATA(curr_charges);
 
-    for (int i = 0; i < 18; i += 3) {
-        // Assumes charges have already been sorted w/ _sort_abs
-        // The plan is to check for equal combinations first then multiples
-        // Because C hates dynamic arrays, the former check should be done in Python
-        int factors[3];
-        for (int j = 0; j < 3; j++) {
-            if (!(*(found_arr+i+j) || *(curr_arr+i+j))) {    // For 0,0
-                factors[j] = 0;
-                continue;
-            } else if (!(*(found_arr+i+j)) != !(*(curr_arr+i+j))) { // For 0,1 & 1,0: never multiples
-                return Py_False;
-            } else {
-                factors[j] = *(found_arr+i+j) / *(curr_arr+i+j);
-            }
-
-            if (j && (factors[j-1] != factors[j])) {
-                return Py_False;
-            }
-        }
+    int dot = 0;
+    int found_sqr = 0;
+    int curr_sqr = 0;
+    for (int i = 0; i < 18; i++) {
+        // After many stack overflow answers, I've concluded that I'm
+        // dumb and the best method really was just the dot product
+        dot += found_arr[i] * curr_arr[i];
+        found_sqr += found_arr[i]*found_arr[i];
+        curr_sqr += curr_arr[i]*curr_arr[i];
     }
-    return Py_True;
+    if (dot*dot == found_sqr * curr_sqr) {
+        return Py_True;
+    }
+    return Py_False;
+    
 }
 
 // List of callable functions
