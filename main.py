@@ -19,19 +19,11 @@ max_charge = 5
 max_steps = 25
 
 actor = ActorCritic()
-<<<<<<< HEAD
 agent = PPO(num_epochs, num_transitions, minibatch_size, lr, lr_gamma, gamma, lmbda, clip_epsilon, entropy_coef)
 env = Charge_Env(max_charge, max_steps, tot_improvement_rwd)
 found_charges = []
 
 log_file = open("./found_charges/found_charges_tot_3.txt", "w")
-=======
-agent = PPO(num_epochs, num_transitions, minibatch_size, lr, step_size, lr_gamma, gamma, lmbda, clip_epsilon, entropy_coef)
-env = Charge_Env(max_charge, max_steps, tot_improvement_rwd)
-found_charges = []
-
-log_file = open("./found_charges.txt", "w")
->>>>>>> 6d49e6a540ad28e881dd234cc6ce3441ee9c2280
 
 for i in range(num_iterations):
 
