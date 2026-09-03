@@ -37,6 +37,8 @@ void add_charges(int *a, int *b, int pos, int len) {
             Index of the first unfilled row
         len :
             The number of rows a can actually hold
+
+        Potentially unused
     */
 
     // Reserve more space if needed
@@ -54,15 +56,37 @@ void sort(int *charges, int num_sol) {
         Sorts charges in increasing order
         to match the paper's charge
         arrangements
+
+        Might go unused
     */
+
     for (int i = 0; i < num_sol*18; i+=3) {
-        if (charges[i] > charges[i+1]) {
+        if (*(charges + i) > *(charges + i+1)) {
             _swap(charges + i, charges + i+1);
         }
-        if (charges[i+1] > charges[i+2]) {
+        if (*(charges + i+1) > *(charges + i+2)) {
             _swap(charges+ i+1, charges + i+2);
-            if (charges[i] > charges[i+1]) {
+            if (*(charges + i) > *(charges + i+1)) {
                 _swap(charges + i, charges+ i+1);
+            }
+        }
+    }
+}
+
+void sort_abs(int *charges, int num_sol) {
+    /*
+        Sorts a 3 element array in
+        order of increasing magnitude
+    */
+
+    for (int i = 0; i < num_sol*18; i+=3) {
+        if (abs(*(charges + i)) > abs(*(charges + i+1))) {
+            _swap(charges+i, charges+i+1);
+        }
+        if (abs(*(charges + i+1)) > abs(*(charges + i+2))) {
+            _swap(charges+i+1, charges+i+2);
+            if (*(charges + i) > abs(*(charges + i+1))) {
+                _swap(charges+i, charges+i+1);
             }
         }
     }
@@ -76,6 +100,8 @@ int srch(int *a, int *b, int num_sol_a) {
         To be more specific: a is a
         flattened N x 18 array while
         b is an array with 18 elements
+
+        (actually, this is probably not needed)
     */
 
     for (int i = 0; i < num_sol_a; i++) {
@@ -87,15 +113,19 @@ int srch(int *a, int *b, int num_sol_a) {
 }
 
 int is_multiple(int *a, int *b, int num_sol_a) {
+    /*
+        Checks to see if b is a multiple of a row
+        in a
+    */
     int dot = 0;
     int a_sqr = 0;
     int b_sqr = 0;
     
     for (int i = 0; i < num_sol_a; i++) {
         for (int j = 0; j < 18; j++) {
-            dot += a[i] * b[i];
-            a_sqr += *(a + 18*i+j)*(*(a + 18*i+j));
-            b_sqr += *(b + j)*(*(b + j));
+            dot += *(a + 18*i+j) * (*(b + j));
+            a_sqr += *(a + 18*i+j) * (*(a + 18*i+j));
+            b_sqr += *(b + j) * (*(b + j));
         }
         if (dot*dot == a_sqr * b_sqr) {
             return i;

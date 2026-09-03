@@ -3,41 +3,72 @@
 #include <string.h>
 #include "UTILS.h"
 
+/*
+    This program finds duplicates solutions between
+    two files.
+    
+    It can also be used to check if a solution
+    is missing from the complete set.
+
+    Args are:
+    1. Path to file containing solutions to search from
+
+    2. Number of solutions in the above file
+
+    2. Path to file containing solutions to search for
+
+    3. Number of solutions in the above file
+    
+    4. Whether to print duplicates or non duplicates
+       0 for duplicates, 1 for non-duplicates
+*/
+
 int main(int argc, char *argv[]) {
     FILE *sol_1 = fopen(argv[1], "r");
     int num_sol_1 = atoi(argv[2]);
     int *charges_1 = extract_charges(sol_1, num_sol_1);
     
-
     FILE *sol_2 = fopen(argv[3], "r");
     int num_sol_2 = atoi(argv[4]);
     int *charges_2 = extract_charges(sol_2, num_sol_2);
 
-    FILE *duplicate_sol = fopen("./duplicates.txt", "w");
-    int num_duplicates = 0;
-    int *duplicate_charges = malloc(sizeof(int) * BUFFER_SIZE * 18);
+    int dupe_or_unique = atoi(argv[5]);
+    char *file_name;
+    
+    if (dupe_or_unique) {
+        file_name = "./output/uniques.txt";
+    } else {
+        file_name = "./output/duplicates.txt";
+    }
+    FILE *logged_sol = fopen(file_name, "w");
 
     for (int i = 0; i < num_sol_2; i++) {
         int found_at = is_multiple(charges_1, charges_2 + 18*i, num_sol_1);
-        if (found_at != -1) {
-            num_duplicates++;
-            add_charges(duplicate_charges, charges_2 + 18*i,
-                        num_duplicates-1, BUFFER_SIZE * (1 + num_duplicates / BUFFER_SIZE));
-            
+
+        if (dupe_or_unique && found_at == -1) {
             for (int j = 0; j < 18; j++) {
-                fprintf(duplicate_sol, "  % d", *(duplicate_charges + 18*(num_duplicates-1)+j));
+                fprintf(logged_sol, "  % d", *(charges_2 + 18*i+j));
             }
-            fprintf(duplicate_sol, "\n");
+            fprintf(logged_sol, "\n");
             
-            printf("Solution %d in file 2 is a duplicate found at line %d of file 1\n", i+1, found_at+1);
+            printf("Solution %d in file 2 is missing from file 1\n", i+1);
+            continue;
+        }
+
+        if (!dupe_or_unique && found_at != -1) {
+            for (int j = 0; j < 18; j++) {
+                fprintf(logged_sol, "  % d", *(charges_2 + 18*i+j));
+            }
+            fprintf(logged_sol, "\n");
+            
+            printf("Solution %d in file 2 is a duplicate of solution %d in file 1\n", i+1, found_at+1);
         }
     }
 
     fclose(sol_1);
     fclose(sol_2);
-    fclose(duplicate_sol);
+    fclose(logged_sol);
 
     free(charges_1);
     free(charges_2);
-    free(duplicate_charges);
 }

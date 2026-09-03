@@ -3,10 +3,9 @@ __pycache__/
 build/
 .vscode/
 SMnuRcharges/
+bin/
+output/
 
 *.so
 *.pyd
 *test.py
-
-*srch
-*dupe
