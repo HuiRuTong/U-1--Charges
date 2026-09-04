@@ -20,7 +20,7 @@ class Charge_Env(gym.Env):
                                 }
                             )   # Mostly just here for convention's sake. Goes unused
         self.charges, self.charges_sum = self.observation_space.sample()
-        self.curr_coef = np.array([anomaly_quadratic(self.charges), anomaly_cubic(self.charges), yukawa(self.charges)])
+        self.curr_coef = np.array([anomaly_quadratic(self.charges), anomaly_cubic(self.charges), yukawa(self.charges_sum)])
         self.prev_coef = np.zeros((3,))
 
         self.rwd_func = rwd_func

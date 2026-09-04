@@ -3,7 +3,7 @@ from src.neural_net import *
 from src.rwd_func import *
 import torch
 
-num_iterations = 100
+num_iterations = 50
 num_transitions = 200
 minibatch_size = 20
 num_epochs = 50
@@ -18,7 +18,6 @@ entropy_coef = 0.02
 max_charge = 5
 max_steps = 25
 
-actor = ActorCritic()
 agent = PPO(num_epochs, num_transitions, minibatch_size, lr, lr_gamma, gamma, lmbda, clip_epsilon, entropy_coef)
 env = Charge_Env(max_charge, max_steps, tot_improvement_rwd)
 found_charges = []
@@ -41,7 +40,7 @@ for i in range(num_iterations):
         state = torch.tensor(env.charges, dtype=torch.float32)
         states.append(state)
 
-        particle_logits, generation_logits, mod_logits, val = actor(torch.unsqueeze(state, 0))
+        particle_logits, generation_logits, mod_logits, val = agent.actor_critic(torch.unsqueeze(state, 0))
         
         particle_distr = torch.distributions.Categorical(logits=particle_logits)
         chosen_particle = particle_distr.sample()
@@ -74,7 +73,7 @@ for i in range(num_iterations):
 
         if terminated or truncated or j == num_transitions - 1:  # Last non terminal / truncated state also requires the next value
             state = torch.tensor(state, dtype=torch.float32)
-            vals.append(int(not terminated) * actor.forward(torch.unsqueeze(state, 0), value_only=True))   # Terminated states will hvae zero value
+            vals.append(int(not terminated) * agent.actor_critic.forward(torch.unsqueeze(state, 0), value_only=True))   # Terminated states will hvae zero value
 
             env.reset()
 

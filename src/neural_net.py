@@ -123,7 +123,7 @@ class PPO():
             start = j * self.minibatch_size
             end = (j+1) * self.minibatch_size
 
-            particle_logits, generation_logits, mod_logits, new_vals = self.actor_critic.forward(self.states[start:end])        
+            particle_logits, generation_logits, mod_logits, new_vals = self.actor_critic.forward(self.states[indices[start:end]])        
             particle_distr = torch.distributions.Categorical(logits=particle_logits)
             generation_distr = torch.distributions.Categorical(logits=generation_logits)
             mod_distr = torch.distributions.Categorical(logits=mod_logits)
@@ -134,8 +134,8 @@ class PPO():
             entropies = torch.stack((particle_distr.entropy(), generation_distr.entropy(), mod_distr.entropy()))
             entropy = torch.mean(entropies)
     
-            policy_loss = obj - self.entropy_coef*entropy
-            val_loss = torch.nn.functional.mse_loss(new_vals, self.vals_tar[start:end])
+            policy_loss = -obj - self.entropy_coef*entropy
+            val_loss = torch.nn.functional.mse_loss(new_vals, self.vals_tar[indices[start:end]])
             tot_loss = policy_loss + val_loss
     
             self.optimizer.zero_grad()

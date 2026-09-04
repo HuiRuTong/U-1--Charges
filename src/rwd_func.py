@@ -10,7 +10,7 @@ def generic_rwd(found_charges, curr_charges, curr_coef, prev_coef):
     sorted_charges = get_sorted_charges(curr_charges)
     for found in found_charges:
         if multiple_check(found, sorted_charges):
-            return 300, False
+            return 100, False
 
     for i in range(3):
         if not curr_coef[i]:
@@ -34,7 +34,7 @@ def tot_improvement_rwd(found_charges, curr_charges, curr_coeff, prev_coeff):
     sorted_charges = get_sorted_charges(curr_charges)
     for found in found_charges:
         if multiple_check(found, sorted_charges):
-            return 300, False
+            return 100, False
 
     if not curr_tot_coef:
         found_charges.append(sorted_charges)
@@ -58,7 +58,7 @@ def split_improvement_rwd(found_charges, curr_charges, curr_coef, prev_coef):
     sorted_charges = get_sorted_charges(curr_charges)
     for found in found_charges:
         if multiple_check(found, sorted_charges):
-            return 300, False
+            return 100, False
         
     for i in range(3):
         if not curr_coef[i]:
