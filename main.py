@@ -3,7 +3,7 @@ from src.neural_net import *
 from src.rwd_func import *
 import torch
 
-num_iterations = 50
+num_iterations = 512
 num_transitions = 200
 minibatch_size = 20
 num_epochs = 50
@@ -49,6 +49,9 @@ for i in range(num_iterations):
         if (chosen_particle.item() < 2):
             # To avoid picking 3rd charge for non doublet and neutrino
             generation_logits.masked_fill_(torch.tensor([False, False, True]), 1e-9)
+        # MASK ACTIONS THAT EXCEED BOUNDS!!!!!!!!!
+        # !!!!
+        # >:(
 
         generation_distr = torch.distributions.Categorical(logits=generation_logits)
         chosen_generation = generation_distr.sample()
